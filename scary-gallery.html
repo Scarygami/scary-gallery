@@ -1,0 +1,125 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="scary-image.html">
+
+<!--
+`scary-gallery`
+
+
+@demo demo/index.html
+-->
+
+<dom-module id="scary-gallery">
+  <template>
+    <style>
+      :host {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      ::slotted(scary-image) {
+        margin: 2px;
+      }
+    </style>
+    <slot></slot>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'scary-gallery',
+
+      properties: {
+        minHeight: {
+          type: Number,
+          value: 200
+        },
+        maxHeight: {
+          type: Number,
+          value: 500
+        }
+      },
+
+      observers: [
+        '_init(minHeight, maxHeight)'
+      ],
+
+      attached: function () {
+        this._observer = Polymer.dom(this).observeNodes(this._init);
+        this._boundResize = this._resize.bind(this);
+        window.addEventListener('resize', this._boundResize);
+        this.async(this._init);
+      },
+
+      detached: function () {
+        Polymer.dom(this).unobserveNodes(this._observer);
+        window.removeEventListener('resize', this._boundResize);
+      },
+
+      _init: function () {
+        this.debounce('init', function () {
+          this._firstResize = true;
+          this._children = Array.prototype.slice.call(Polymer.dom(this).querySelectorAll('scary-image'));
+          this._children.forEach(function (img) {
+            img.sizing = 'cover';
+            img.width = this.minHeight * 4 / 3;
+            img.height = this.minHeight;
+          });
+          this._resize();
+        }, 50);
+      },
+
+      _resize: function () {
+        this.debounce('resize', function () {
+          var loaded = true;
+          var rows = [];
+          var row = [];
+          var rowWidth = 0;
+          this._maxWidth = this.offsetWidth;
+          this._children.forEach(function (img) {
+            if (img.loaded) {
+              var height = Math.min(Math.max(this._maxWidth / 4, this.minHeight), this.maxHeight);
+              var width = height / img.naturalHeight * img.naturalWidth + 4;
+              if (rowWidth + width > this._maxWidth) {
+                if (row.length > 0) {
+                  rows.push({
+                    images: row,
+                    width: rowWidth
+                  });
+                  row = [];
+                }
+                rowWidth = 0;
+              }
+              rowWidth += width;
+              img.tmpHeight = height;
+              img.tmpWidth = width;
+              row.push(img);
+            } else {
+              loaded = false;
+            }
+          }.bind(this));
+          if (row.length > 0) {
+            rows.push({
+              images: row,
+              width: rowWidth
+            });
+          }
+          rows.forEach(function (row) {
+            row.images.forEach(function (img) {
+              img.width = img.tmpWidth * this._maxWidth / row.width - 4;
+              img.height = img.width / img.naturalWidth * img.naturalHeight;
+            }.bind(this));
+          }.bind(this));
+          if (!loaded) {
+            this._resize();
+          }
+          if (loaded && this._firstResize) {
+            this._firstResize = false;
+            this._resize();
+          }
+        }, 50);
+      },
+
+    });
+  </script>
+</dom-module>
