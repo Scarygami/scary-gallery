@@ -1,5 +1,7 @@
 # \<scary-gallery\>
 
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/Scarygami/scary-gallery)
+
 `<scary-gallery>` will (try to) layout any of its `<scary-image>` children
 to make best use of available space, and rearranges the images, when the
 size changes.
