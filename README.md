@@ -1,21 +1,21 @@
 # \<scary-gallery\>
 
+`<scary-gallery>` will (try to) layout any of its `<scary-image>` children
+to make best use of available space, and rearranges the images, when the
+size changes.
 
-
-## Install the Polymer-CLI
-
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
-
-## Viewing Your Element
-
+Sample usage:
 ```
-$ polymer serve
-```
-
-## Running Tests
-
-```
-$ polymer test
+<scary-gallery>
+  <scary-image src="img1.jpg"></scary-image>
+  <scary-image src="img2.jpg"></scary-image>
+  <scary-image src="img3.jpg"></scary-image>
+  <scary-image src="img4.jpg"></scary-image>
+  <scary-image src="img5.jpg"></scary-image>
+  <scary-image src="img6.jpg"></scary-image>
+</scary-gallery>
 ```
 
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+Disclaimer:
+
+Work in progress, the algorithm to layout the images is far from perfect.

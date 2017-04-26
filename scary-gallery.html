@@ -2,8 +2,25 @@
 <link rel="import" href="scary-image.html">
 
 <!--
-`scary-gallery`
+`<scary-gallery>` will (try to) layout any of its `<scary-image>` children
+to make best use of available space, and rearranges the images, when the
+size changes.
 
+Sample usage:
+```
+<scary-gallery>
+  <scary-image src="img1.jpg"></scary-image>
+  <scary-image src="img2.jpg"></scary-image>
+  <scary-image src="img3.jpg"></scary-image>
+  <scary-image src="img4.jpg"></scary-image>
+  <scary-image src="img5.jpg"></scary-image>
+  <scary-image src="img6.jpg"></scary-image>
+</scary-gallery>
+```
+
+Disclaimer:
+
+Work in progress, the algorithm to layout the images is far from perfect.
 
 @demo demo/index.html
 -->
@@ -16,10 +33,6 @@
         display: flex;
         flex-wrap: wrap;
       }
-
-      ::slotted(scary-image) {
-        margin: 2px;
-      }
     </style>
     <slot></slot>
   </template>
@@ -30,25 +43,31 @@
       is: 'scary-gallery',
 
       properties: {
+        /**
+         * Minimum height of photos, unless they are too wide to fit.
+         */
         minHeight: {
           type: Number,
           value: 200
         },
-        maxHeight: {
+
+        /**
+         * Spacing between the images in pixels
+         */
+        gap: {
           type: Number,
-          value: 500
+          value: 4
         }
       },
 
       observers: [
-        '_init(minHeight, maxHeight)'
+        '_init(minHeight, gap)'
       ],
 
       attached: function () {
         this._observer = Polymer.dom(this).observeNodes(this._init);
         this._boundResize = this._resize.bind(this);
         window.addEventListener('resize', this._boundResize);
-        this.async(this._init);
       },
 
       detached: function () {
@@ -59,12 +78,9 @@
       _init: function () {
         this.debounce('init', function () {
           this._firstResize = true;
-          this._children = Array.prototype.slice.call(Polymer.dom(this).querySelectorAll('scary-image'));
-          this._children.forEach(function (img) {
-            img.sizing = 'cover';
-            img.width = this.minHeight * 4 / 3;
-            img.height = this.minHeight;
-          });
+          this._children = Array.prototype.slice.call(
+            Polymer.dom(this).querySelectorAll('scary-image')
+          );
           this._resize();
         }, 50);
       },
@@ -77,9 +93,9 @@
           var rowWidth = 0;
           this._maxWidth = this.offsetWidth;
           this._children.forEach(function (img) {
+            img.style.margin = (this.gap / 2).toString(10) + 'px';
             if (img.loaded) {
-              var height = Math.min(Math.max(this._maxWidth / 4, this.minHeight), this.maxHeight);
-              var width = height / img.naturalHeight * img.naturalWidth + 4;
+              var width = this.minHeight / img.naturalHeight * img.naturalWidth + this.gap;
               if (rowWidth + width > this._maxWidth) {
                 if (row.length > 0) {
                   rows.push({
@@ -91,7 +107,6 @@
                 rowWidth = 0;
               }
               rowWidth += width;
-              img.tmpHeight = height;
               img.tmpWidth = width;
               row.push(img);
             } else {
@@ -104,16 +119,26 @@
               width: rowWidth
             });
           }
+
           rows.forEach(function (row) {
+            var totalGap = row.images.length * this.gap;
+            var targetWidth = this._maxWidth - totalGap;
+            var rowWidth = row.width - totalGap;
+            var targetHeight = this.minHeight * targetWidth / rowWidth;
+
             row.images.forEach(function (img) {
-              img.width = img.tmpWidth * this._maxWidth / row.width - 4;
-              img.height = img.width / img.naturalWidth * img.naturalHeight;
+              img.height = targetHeight;
+              img.width = targetHeight / img.naturalHeight * img.naturalWidth;
             }.bind(this));
           }.bind(this));
+
           if (!loaded) {
             this._resize();
           }
           if (loaded && this._firstResize) {
+            // Unfortunately there is no way (I know of) to detect size changes
+            // because of scrollbars appearing after the initial load.
+            // Therefore I trigger a second _resize() manually here.
             this._firstResize = false;
             this._resize();
           }
