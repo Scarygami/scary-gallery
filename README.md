@@ -5,14 +5,25 @@ to make best use of available space, and rearranges the images, when the
 size changes.
 
 Sample usage:
+<!---
 ```
-<scary-gallery>
-  <scary-image src="img1.jpg"></scary-image>
-  <scary-image src="img2.jpg"></scary-image>
-  <scary-image src="img3.jpg"></scary-image>
-  <scary-image src="img4.jpg"></scary-image>
-  <scary-image src="img5.jpg"></scary-image>
-  <scary-image src="img6.jpg"></scary-image>
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="scary-gallery.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<scary-gallery min-height="100">
+  <scary-image src="https://lorempixel.com/300/200/"></scary-image>
+  <scary-image src="https://lorempixel.com/300/250/"></scary-image>
+  <scary-image src="https://lorempixel.com/350/200/"></scary-image>
+  <scary-image src="https://lorempixel.com/500/200/"></scary-image>
+  <scary-image src="https://lorempixel.com/150/200/"></scary-image>
+  <scary-image src="https://lorempixel.com/200/200/"></scary-image>
 </scary-gallery>
 ```
 
