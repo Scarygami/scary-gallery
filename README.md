@@ -19,10 +19,10 @@ Sample usage:
 ```html
 <scary-gallery min-height="100">
   <scary-image src="https://lorempixel.com/300/200/"></scary-image>
-  <scary-image src="https://lorempixel.com/300/250/"></scary-image>
+  <scary-image src="https://lorempixel.com/350/250/"></scary-image>
   <scary-image src="https://lorempixel.com/350/200/"></scary-image>
-  <scary-image src="https://lorempixel.com/500/200/"></scary-image>
-  <scary-image src="https://lorempixel.com/150/200/"></scary-image>
+  <scary-image src="https://lorempixel.com/800/200/"></scary-image>
+  <scary-image src="https://lorempixel.com/320/200/"></scary-image>
   <scary-image src="https://lorempixel.com/200/200/"></scary-image>
 </scary-gallery>
 ```
